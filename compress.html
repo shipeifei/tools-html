@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>免费在线图片/视频压缩工具 | 图片压缩神器 | 完全免费 | JPG、PNG图像压缩 | GIF动图压缩</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="screen-orientation" content="portrait">
+<meta name="x5-orientation" content="portrait">
+<link rel="icon" href="https://qnmusic.shukesmart.com/statics/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="keywords" content="图片压缩,图片在线压缩,在线图片压缩,PNG压缩,JPG压缩,GIF压缩">
+<meta name="description"
+    content="图片压缩,免费图片压缩,图片在线压缩,免费图片压缩工具,图片大小压缩,图像有损压缩,图像无损压缩,jpg图片压缩,png图像压缩,gif压缩,gif动图压缩压缩率达到50%~80%，让你的网站更快，节省带宽。在保持完全透明的同时，你的PNG图像的优化效果是50-80%。" />
+<script src="https://qnmusic.shukesmart.com/statics/jquery.min.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="https://qnmusic.shukesmart.com/statics/element.css">
+<script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/vue.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/elementui.js"></script>
+
+<style>
+    .bg-promo {
+        color: #fff;
+        position: relative;
+        background-image: url(/images/home-bg.png);
+        min-height: 3rem;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .bg-light {
+        background-color: #f8fafd !important;
+    }
+
+    .title {
+        font-size: .3rem;
+    }
+
+    .qfe_wrapper {
+        margin-top: .3rem;
+        margin-left: 150px;
+
+
+    }
+
+    @media only screen and (max-width: 768px) {
+        .qfe_wrapper {
+            margin-left: 0;
+
+        }
+    }
+</style>
+
+<body>
+    <div id="app">
+        <section class="bg-promo bg-light text-center">
+
+            <div class="d-flex-column justify-content-center mh-30rem py-11">
+                <h1 style="font-size: .5rem;"> 图片压缩</h1>
+                <div style="font-size: .3rem;margin-top: .3rem;">快捷的图片压缩体验,多种压缩模式可选，多种压缩算法优化文件，均衡图片画质和尺寸，保证最佳质量/大小比。
+                </div>
+            </div>
+
+        </section>
+        <div class="page-container">
+
+            <el-form :label-position="labelPosition" ref="form" :model="form" label-width="150px">
+                <el-form-item label="压缩模式:">
+                    <el-radio-group v-model="form.type" size="mini">
+                        <el-radio-button label="1">有损压缩</el-radio-button>
+                        <el-radio-button label="2">无损压缩</el-radio-button>
+                        <el-radio-button label="3">自定义压缩比</el-radio-button>
+                    </el-radio-group>
+                    <el-alert v-show="form.type==1" style="margin-top:.2rem;" :closable="false"
+                        title="  压缩比50%，会降低图片的清晰度，但是图片大小变化明显。" type="warning">
+                    </el-alert>
+                    <el-alert v-show="form.type==2" style="margin-top:.2rem;" :closable="false"
+                        title="压缩比变化不大，图片大小变化不明显。" type="warning">
+                    </el-alert>
+                    <div v-show="form.type==3" style="margin-top:.2rem;" :closable="false">
+                        图片质量(1-95)越大越清晰 <el-input-number v-model="form.quality" :min="1" :max="95"
+                            label="描述文字"></el-input-number>
+
+                    </div>
+                </el-form-item>
+                <!-- <el-form-item label="图片尺寸">
+                    <el-radio-group v-model="form.size" size="mini">
+                        <el-radio-button label="1">不修改尺寸</el-radio-button>
+                        <el-radio-button label="2">修改尺寸</el-radio-button>
+                    </el-radio-group>
+
+                    <div style="margin-top:.2rem;" :closable="false">
+                        <el-input-number v-model="quality" :min="1" :max="100" label="描述文字"></el-input-number>
+
+                    </div>
+                </el-form-item> -->
+                <el-form-item label="">
+                    <el-upload ref="upload" :on-change="onChange" :on-success="success" :data="form" :limit="10"
+                        :before-upload="beforeAvatarUpload" class="upload-demo" name="files" :auto-upload="false" drag
+                        :action="`https://text2audio.azurewebsites.net/upload_image?type=${form.type}&size=${form.size}&quality=${form.quality}`"
+                        multiple>
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__tip" slot="tip">
+                            支持jpg/png/webp/gif文件，且单张图片不超过50M,最多只能上传10张图片
+
+                            <p style="color: #F56C6C;font-size: .3rem;font-weight: 700;">压缩后 5 分钟后会自动销毁。</p>
+                        </div>
+
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item v-if="fileList.length>0">
+                    <el-button type="primary" @click="submitUpload" size="mini">开始压缩</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="patchDownload" v-if="tableData.length>1" style="float:right;" type="primary"
+                        size="mini" plain><i class="el-icon-download"></i>打包批量下载</el-button>
+
+                    <el-table :data="tableData" style="width: 100% " v-if="tableData.length>0">
+                        <el-table-column prop="filename" label="名称" width="180">
+                        </el-table-column>
+                        <el-table-column prop="status" label="状态" width="180">
+                        </el-table-column>
+                        <el-table-column prop="size" label="原始文件大小">
+                            <template slot-scope="scope">
+                                {{scope.row.size>1024?parseInt(scope.row.size/1024)+'MB':scope.row.size+'KB'}}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="compress_size" label="压缩后文件大小	">
+                            <template slot-scope="scope">
+                                {{scope.row.compress_size>1024?parseInt(scope.row.compress_size/1024)+'MB':scope.row.compress_size+'KB'}}
+
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column label="操作" width="100">
+                            <template slot-scope="scope">
+                                <el-button @click="download(scope.row)" type="text" size="small">下载</el-button>
+
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-form-item>
+
+            </el-form>
+            <div class="qfe_wrapper ">
+                <div style="line-height: 30px;"><span style="color: rgb(0, 0, 0); font-size: .4rem;">使用帮助：</span></div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">1.点击上传或拖拽添加需要压缩的图片文件（支持批量上传，单张图片最大不超过50M）；</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">2.选择压缩模式（有损压缩/无损压缩/高级模式）和图片大小（不改变大小/改变大小），点击"开始压缩"；</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">3.等待系统进行压缩处理，完成后即可进行"下载"，获取压缩好的图片（支持批量下载）。</span>
+                </div>
+            </div>
+            <div class="qfe_wrapper ">
+                <div style="line-height: 30px;"><span style="color: rgb(0, 0, 0); font-size: .4rem;">在线批量压缩说明：</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">1.批量图片压缩原理：使用智能的无损压缩技术来减少图片文件的大小，通过智能的选择颜色的数量，减少存储的字节，但是效果基本是和压缩前一样的</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">2.图片压缩是明显有用的，因为它是唯一能够存储部分透明图像的广泛支持的格式。该格式使用压缩，但文件仍然很大。使用当前图片压缩工具来缩小你的应用和网站的图像。它将使用更少的带宽和更快的加载速度</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">3.关于安全隐私问题，因为经常有网上暴露图片隐私问题，本站采用图片固定时间内自动粉碎技术，保证了图片的安全和隐私，请放心使用</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8"
+        src="https://qnmusic.shukesmart.com/statics/flexible_css.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/flexible.js"></script>
+
+    <script>
+        var $isMobile = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+
+        /**
+ * 获取 blob
+ * @param  {String} url 目标文件地址
+ * @return {Promise} 
+ */
+        function getBlob(url) {
+            return new Promise(resolve => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('GET', url, true);
+                xhr.responseType = 'blob';
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        resolve(xhr.response);
+                    }
+                };
+
+                xhr.send();
+            });
+        }
+
+        /**
+         * 保存
+         * @param  {Blob} blob     
+         * @param  {String} filename 想要保存的文件名称
+         */
+        function saveAs(blob, filename) {
+            if (window.navigator.msSaveOrOpenBlob) {
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = document.createElement('a');
+                var body = document.querySelector('body');
+
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                // fix Firefox
+                link.style.display = 'none';
+                body.appendChild(link);
+
+                link.click();
+                body.removeChild(link);
+
+                window.URL.revokeObjectURL(link.href);
+            }
+        }
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    labelPosition: $isMobile ? 'top' : 'right',
+
+                    form: {
+                        type: 1,
+                        size: 1,
+                        quality: 40,
+                    },
+                    tableData: [],
+                    fileList: []
+
+                }
+            }, 
+            methods: {
+                onChange: function (file, fileList) {
+                    this.fileList = fileList;
+
+                },
+                onSubmit: function () {
+                    console.log('submit!');
+                },
+                submitUpload: function () {
+                    this.$refs.upload.submit();
+                },
+                beforeAvatarUpload: function (file) {
+                    console.log(file)
+                    const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/webp');
+                    const isLt50M = file.size / 1024 / 1024 <= 50;
+
+                    if (!isJPG) {
+                        this.$message.error('上传头像图片只能是 jpg/png/webp/gif 格式!');
+                    }
+                    if (!isLt50M) {
+                        this.$message.error('上传图片大小不能超过 50MB!');
+                    }
+                    return isJPG && isLt50M;
+                },
+                success: function (response, file, fileList) {
+                    this.tableData.push(response);
+
+                },
+                download: function (item) {
+                    // var $a = $("<a></a>").attr("href", 'https://text2audio.azurewebsites.net'+item.compress_url).attr("download",  'https://text2audio.azurewebsites.net'+item.compress_url);
+                    // $a[0].click();
+                    // 下载图片
+                    // var a = document.createElement('a');
+                    // // 创建A图片
+                    // a.href = 'https://text2audio.azurewebsites.net'+item.compress_url; //图片地址
+                    // a.download = 'https://text2audio.azurewebsites.net'+item.compress_url.split('/')['https://text2audio.azurewebsites.net'+item.compress_url.split('/').length - 1]; // 下载时图片名称
+                    // document.body.appendChild(a); // 追加元素
+                    // a.click();
+                    // $('.loadLinkElem').remove();
+                    // // 移除
+                    // $('body > a').remove();
+                    // $.get('https://text2audio.azurewebsites.net/get_image/' + item.compress_url).then(res => {
+                    //     console.log(res)
+                    //     location.href = res;
+                    // })
+                    getBlob('https://text2audio.azurewebsites.net/get_image/' + item.compress_url).then(blob => {
+                        saveAs(blob, item.compress_url);
+                    });
+                },
+                patchDownload: function () {
+                    var files = this.tableData.map(item => {
+                        return {
+                            "name": item.compress_url
+                        }
+                    })
+
+                    $.ajax({
+                        type: "POST",
+                        url: "https://text2audio.azurewebsites.net/zip",
+                        data: JSON.stringify({
+                            files: files
+                        }),
+                        contentType: "application/json;charset=utf-8",
+
+                        success: function (res) {
+                            if (res.status === "success") {
+                                location.href = "https://text2audio.azurewebsites.net" + res.url;
+                            } else {
+                                this.$message.error(res.message)
+                            }
+
+
+                        },
+                        error: function (res) {
+                            this.$message.error(res.message)
+
+
+                        },
+                    })
+                }
+            }
+
+        })
+    </script>
+</body>
+
+</html>

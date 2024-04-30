@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>在线格式转换 .jpg .jpeg .gif .png .bmp .webp 图片格式转换</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="screen-orientation" content="portrait">
+<meta name="x5-orientation" content="portrait">
+<link rel="icon" href="https://qnmusic.shukesmart.com/statics/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="keywords" content="图片格式,图片转换,图片格式转换器,图片格式转换,图片转换器,在线制作图片">
+<meta name="description"
+    content="这是一款在线图片格式转换工具，无需安装，完全免费！它可以迅速将.jpg转换成.gif、.png、.bmp、.webp的图片格式。支持.jpg .jpeg .gif .png .bmp .webp此类图片格式之间互相转换。" />
+<script src="https://qnmusic.shukesmart.com/statics/jquery.min.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="https://qnmusic.shukesmart.com/statics/element.css">
+<script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/vue.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/elementui.js"></script>
+
+<style>
+    .bg-promo {
+        color: #fff;
+        position: relative;
+        background-image: url(/images/home-bg.png);
+        min-height: 3rem;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .bg-light {
+        background-color: #f8fafd !important;
+    }
+
+    .title {
+        font-size: .3rem;
+    }
+
+    .qfe_wrapper {
+        margin-top: .3rem;
+        margin-left: 150px;
+
+
+    }
+
+    @media only screen and (max-width: 768px) {
+        .qfe_wrapper {
+            margin-left: 0;
+
+        }
+    }
+</style>
+
+<body>
+    <div id="app">
+        <section class="bg-promo bg-light text-center">
+
+            <div class="d-flex-column justify-content-center mh-30rem py-11">
+                <h1 style="font-size: .5rem;"> 在线图片格式转换</h1>
+                <div style="font-size: .3rem;margin-top: .3rem;">
+                    在线图片格式转换支持：[.jpg] 、[.jpeg] 、[.gif]、[.png]、 [.bmp]、还支持[.webp]
+                    。</div>
+            </div>
+
+        </section>
+        <div class="page-container">
+
+            <el-form :label-position="labelPosition" ref="form" :model="form" label-width="150px">
+                <el-form-item label="转换为格式:">
+                    <el-radio-group v-model="form.type" size="mini">
+                        <el-radio-button label="jpg">.jpg</el-radio-button>
+                        <el-radio-button label="jpeg">.jpeg</el-radio-button>
+                        <el-radio-button label="png">.png</el-radio-button>
+                        <el-radio-button label="webp">.webp</el-radio-button>
+
+                        <el-radio-button label="gif">.gif</el-radio-button>
+
+                        <el-radio-button label="bmp">.bmp</el-radio-button>
+
+                    </el-radio-group>
+
+                </el-form-item>
+                <el-form-item label="">
+                    <el-upload ref="upload" :on-change="onChange" :on-success="success" :data="form"
+                        :before-upload="beforeAvatarUpload" class="upload-demo" name="files" :auto-upload="false" drag
+                        :action="`https://text2audio.azurewebsites.net/covert_image?type=${form.type}`">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__tip" slot="tip">
+                            支持jpg/jpeg/png/webp/gif/bmp/tiff
+                            <p style="color: #F56C6C;font-size: .3rem;font-weight: 700;"> 5 分钟后会自动销毁。</p>
+                        </div>
+
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item v-if="fileList.length>0">
+                    <el-button type="primary" @click="submitUpload" size="mini">开始转换</el-button>
+                    <el-button @click="download" v-if="info.url" type="primary" size="mini" plain><i
+                            class="el-icon-download"></i>下载图片</el-button>
+                </el-form-item>
+
+            </el-form>
+
+            <div class="qfe_wrapper ">
+                <div style="line-height: 30px;"><span style="color: rgb(0, 0, 0); font-size: .4rem;">使用帮助：</span></div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">1.点击上传或拖拽添加需要转换的图片文件；</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">2.点击"开始转换"；</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">3.等待系统进行处理，完成后即可进行"下载图片"。</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8"
+        src="https://qnmusic.shukesmart.com/statics/flexible_css.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/flexible.js"></script>
+
+    <script>
+        var $isMobile = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+
+        /**
+ * 获取 blob
+ * @param  {String} url 目标文件地址
+ * @return {Promise} 
+ */
+        function getBlob(url) {
+            return new Promise(resolve => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('GET', url, true);
+                xhr.responseType = 'blob';
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        resolve(xhr.response);
+                    }
+                };
+
+                xhr.send();
+            });
+        }
+
+        /**
+         * 保存
+         * @param  {Blob} blob     
+         * @param  {String} filename 想要保存的文件名称
+         */
+        function saveAs(blob, filename) {
+            if (window.navigator.msSaveOrOpenBlob) {
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = document.createElement('a');
+                var body = document.querySelector('body');
+
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                // fix Firefox
+                link.style.display = 'none';
+                body.appendChild(link);
+
+                link.click();
+                body.removeChild(link);
+
+                window.URL.revokeObjectURL(link.href);
+            }
+        }
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    labelPosition: $isMobile ? 'top' : 'right',
+
+                    form: {
+                        type: "jpg",
+                        size: 1,
+                        quality: 40,
+                    },
+                    info: {},
+                    fileList: []
+                }
+            }, methods: {
+                onChange: function (file, fileList) {
+                    this.fileList = fileList;
+
+                },
+                download:function(){
+                    getBlob('https://text2audio.azurewebsites.net/get_image/' + this.info.url.split('/')[2]).then(blob => {
+                        saveAs(blob, this.info.url.split('/')[2]);
+                    });
+                },
+                onSubmit: function () {
+                    console.log('submit!');
+                },
+                submitUpload: function () {
+                    this.$refs.upload.submit();
+                },
+                beforeAvatarUpload: function (file) {
+
+                    const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/webp' || file.type === 'image/bmp' || file.type === 'image/tiff');
+
+
+                    if (!isJPG) {
+                        this.$message.error('上传头像图片只能是 jpg/png/webp/gif/bmp/tiff 格式!');
+                    }
+
+                    return isJPG;
+                },
+                success: function (response, file, fileList) {
+                    console.log(response)
+                    this.info = response;
+
+                }
+
+            }
+
+        })
+    </script>
+</body>
+
+</html>

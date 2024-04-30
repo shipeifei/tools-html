@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>图片信息查看，图片格式、大小、像素、色彩查看器</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="screen-orientation" content="portrait">
+<meta name="x5-orientation" content="portrait">
+<link rel="icon" href="https://qnmusic.shukesmart.com/statics/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="keywords" content="图片信息查看,图片查看器">
+<meta name="description"
+    content="通过上传图片，可以对图片信息查看，可以查看到图片格式，如.jpg、.png、.jpeg、.gif、.bmp、.webp等。、图片大小，单位KB、图片像素、图片色彩，如palette16、ycbcr等，图片帧数等参数。" />
+<script src="https://qnmusic.shukesmart.com/statics/jquery.min.js"></script>
+<link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="https://qnmusic.shukesmart.com/statics/element.css">
+<script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/vue.js"></script>
+
+<script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/elementui.js"></script>
+
+<style>
+    .bg-promo {
+        color: #fff;
+        position: relative;
+        background-image: url(/images/home-bg.png);
+        min-height: 3rem;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .bg-light {
+        background-color: #f8fafd !important;
+    }
+
+    .title {
+        font-size: .3rem;
+    }
+
+    .qfe_wrapper {
+        margin-top: .3rem;
+        margin-left: 150px;
+
+
+    }
+
+    @media only screen and (max-width: 768px) {
+        .qfe_wrapper {
+            margin-left: 0;
+
+        }
+    }
+</style>
+
+<body>
+    <div id="app">
+        <section class="bg-promo bg-light text-center">
+
+            <div class="d-flex-column justify-content-center mh-30rem py-11">
+                <h1 style="font-size: .5rem;"> 图片信息查看</h1>
+                <div style="font-size: .3rem;margin-top: .3rem;">
+                    图片基本信息包括图片格式、图片大小、色彩模型，图片像素，图片类型，如png、jpeg、gif、bmp，webp等。</div>
+            </div>
+
+        </section>
+        <div class="page-container">
+
+            <el-form :label-position="labelPosition" ref="form" :model="form" label-width="150px">
+
+                <el-form-item label="">
+                    <el-upload ref="upload" :on-change="onChange" :on-success="success" :data="form" :before-upload="beforeAvatarUpload"
+                        class="upload-demo" name="files" :auto-upload="false" drag
+                        :action="`https://text2audio.azurewebsites.net/get_image_info`">
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__tip" slot="tip">
+                            支持jpg/png/webp/gif/bmp
+                            <p style="color: #F56C6C;font-size: .3rem;font-weight: 700;"> 5 分钟后会自动销毁。</p>
+                        </div>
+
+                    </el-upload>
+                </el-form-item>
+
+                <el-form-item v-if="fileList.length>0">
+                    <el-button type="primary" @click="submitUpload" size="mini">开始查看</el-button>
+                </el-form-item>
+
+            </el-form>
+            <div class="qfe_wrapper "  v-if="info.size">
+                <el-form :label-position="labelPosition"  >
+
+                    <el-form-item label="图片大小:">
+                        {{info.size>1024?parseInt(info.size/1024)+'MB':info.size+'KB'}}
+
+                    </el-form-item>
+                    <el-form-item label="图片名称:">
+                        {{info.filename}}
+                    </el-form-item>
+                    <el-form-item label="图片类型:">
+                        {{info.format}}
+                    </el-form-item>
+                    <el-form-item label="图片像素:">
+                        {{info.width}}* {{info.height}}px
+                    </el-form-item>
+                    <el-form-item label="彩色空间:">
+                        {{info.mode}}
+                    </el-form-item>
+                </el-form>
+
+            </div>
+            <div class="qfe_wrapper ">
+                <div style="line-height: 30px;"><span style="color: rgb(0, 0, 0); font-size: .4rem;">使用帮助：</span></div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">1.点击上传或拖拽添加需要查看的图片文件；</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">2.点击"开始查看"；</span>
+                </div>
+                <div style="line-height: 30px;"><span
+                        style="font-size: 15px;color: #666666;font-size: .3rem;">3.等待系统进行处理，完成后即可进行"查看"。</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script type="text/javascript" charset="utf-8"
+        src="https://qnmusic.shukesmart.com/statics/flexible_css.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://qnmusic.shukesmart.com/statics/flexible.js"></script>
+
+    <script>
+        var $isMobile = /Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent);
+
+        /**
+ * 获取 blob
+ * @param  {String} url 目标文件地址
+ * @return {Promise} 
+ */
+        function getBlob(url) {
+            return new Promise(resolve => {
+                const xhr = new XMLHttpRequest();
+
+                xhr.open('GET', url, true);
+                xhr.responseType = 'blob';
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        resolve(xhr.response);
+                    }
+                };
+
+                xhr.send();
+            });
+        }
+
+        /**
+         * 保存
+         * @param  {Blob} blob     
+         * @param  {String} filename 想要保存的文件名称
+         */
+        function saveAs(blob, filename) {
+            if (window.navigator.msSaveOrOpenBlob) {
+                navigator.msSaveBlob(blob, filename);
+            } else {
+                var link = document.createElement('a');
+                var body = document.querySelector('body');
+
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                // fix Firefox
+                link.style.display = 'none';
+                body.appendChild(link);
+
+                link.click();
+                body.removeChild(link);
+
+                window.URL.revokeObjectURL(link.href);
+            }
+        }
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    labelPosition: $isMobile ? 'top' : 'right',
+
+                    form: {
+                        type: 1,
+                        size: 1,
+                        quality: 40,
+                    },
+                    info: {},
+                    fileList:[]
+                }
+            }, methods: {
+                onChange:function(file,fileList){
+                   this.fileList=fileList;
+
+                },
+                onSubmit: function () {
+                    console.log('submit!');
+                },
+                submitUpload: function () {
+                    this.$refs.upload.submit();
+                },
+                beforeAvatarUpload: function (file) {
+                    
+                    const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif' || file.type === 'image/webp' || file.type === 'image/bmp');
+
+
+                    if (!isJPG) {
+                        this.$message.error('上传头像图片只能是 jpg/png/webp/gif 格式!');
+                    }
+
+                    return isJPG;
+                },
+                success: function (response, file, fileList) {
+                    console.log(response)
+                    this.info = response;
+
+                }
+
+            }
+
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,240 @@
+
+
+.page-container {
+    width: 1140px;
+    padding: 20px;
+    margin: 0 auto
+}
+
+
+@media (max-width: 1140px) {
+    .page-container {
+        width:95%
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding:.3rem
+    }
+
+}
+
+::-webkit-scrollbar {
+    width: 3px;
+    height: 3px;
+}
+
+
+/*外层轨道。可以用display:none让其不显示，也可以添加背景图片，颜色改变显示效果*/
+
+::-webkit-scrollbar-track {
+    width: 6px;
+    border-radius: 2em;
+    background-color: #fff;
+}
+
+.vc-switch {
+    z-index: 9999999 !important;
+}
+
+.vc-mask {
+    z-index: 9999999 !important;
+}
+
+.vc-panel {
+    z-index: 9999999 !important;
+}
+.mh-30rem {
+    min-height: 3rem;
+}
+
+.pb-11, .py-11 {
+    padding-bottom: .5rem !important;
+}
+.pt-11, .py-11 {
+    padding-top: .5rem !important;
+}
+.justify-content-center {
+    -ms-flex-pack: center !important;
+    justify-content: center !important;
+}
+.d-flex {
+    display: -ms-flexbox !important;
+    display: flex !important;
+}
+.d-flex-column {
+    display: -ms-flexbox !important;
+    display: flex !important;
+    flex-direction: column;
+}
+
+/*滚动条的设置*/
+
+::-webkit-scrollbar-thumb {
+    background-color: #606d71;
+    background-clip: padding-box;
+    min-height: 28px;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+    @include atSmall {
+        background-color: transparent;
+    }
+}
+
+html {
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none;
+    touch-action: pan-y;
+    font-size: 62.5%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Noto Sans SC', 'Montserrat', '微软雅黑', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    font-size: 1.6rem;
+    color: #3c3b37;
+}
+
+
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+p,
+textarea,
+input,
+select,
+option,
+form,
+tr,
+th,
+td,
+img,
+em,
+i,
+var,
+strong {
+    margin: 0;
+    padding: 0;
+}
+
+input {
+    outline: none;
+}
+
+a {
+    color: #29303b;
+    background-color: transparent;
+    font-weight: 400;
+    text-decoration: none;
+}
+
+a,
+img {
+    border: none;
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: none;
+}
+
+ul,
+li {
+    list-style: none;
+}
+
+.clear {
+    clear: both;
+}
+
+.clearfix:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.clearfix {
+    zoom: 1;
+}
+
+img {
+    border: 0;
+    vertical-align: middle;
+    height: auto;
+}
+
+.fl {
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+body a,
+body input {
+    outline: none;
+}
+
+body,
+.main-content-wrapper {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    background: #fff;
+}
+
+.main-content-wrapper,
+.main-content {
+    flex: 1 0 auto;
+}
+
+.coustom-scroll::-webkit-scrollbar-thumb {
+    background-color: #8e8e8e;
+    border-radius: 2px;
+}
+
+.coustom-scroll::-webkit-scrollbar-button {
+    background-color: #fff;
+    display: none;
+}
+
+.coustom-scroll::-webkit-scrollbar-corner {
+    background-color: #000;
+}
+
+.coustom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.coustom-scroll::-webkit-scrollbar-track {
+    border-radius: 2px;
+    background-color: #d6d6d6;
+}
+
+.coustom-scroll::-webkit-scrollbar-thumb {
+    background-color: #8e8e8e;
+    border-radius: 2px;
+}
+
